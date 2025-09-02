@@ -43,22 +43,20 @@ function renderTodos() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = task.completed;
-    checkbox.style.marginTop = "6px";
+    checkbox.className = "task-checkbox";
     checkbox.addEventListener("change", () => {
       todos[index].completed = checkbox.checked;
       saveTodos();
       renderTodos();
     });
 
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "task-content";
+
     const span = document.createElement("span");
     span.textContent = task.text;
     span.className = "task-text";
-
-    if (task.completed) {
-      span.style.textDecoration = "line-through";
-      span.style.color = "#666fbb";
-      span.style.opacity = "0.7";
-    }
+    contentDiv.appendChild(span);
 
     const buttonDiv = document.createElement("div");
     buttonDiv.className = "task-buttons";
@@ -84,7 +82,7 @@ function renderTodos() {
 
     buttonDiv.append(editBtn, removeBtn);
 
-    li.append(checkbox, span, buttonDiv);
+    li.append(checkbox, contentDiv, buttonDiv);
     todoList.appendChild(li);
   });
 }

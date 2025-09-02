@@ -2,6 +2,66 @@ const input = document.getElementById("todo-input");
 const addBtn = document.getElementById("add-btn");
 const todoList = document.getElementById("todo-list");
 
+const editPopup = document.createElement("div");
+editPopup.style.position = "fixed";
+editPopup.style.top = "0";
+editPopup.style.left = "0";
+editPopup.style.width = "100vw";
+editPopup.style.height = "100vh";
+editPopup.style.background = "rgba(0,0,0,0.5)";
+editPopup.style.display = "none";
+editPopup.style.justifyContent = "center";
+editPopup.style.alignItems = "center";
+editPopup.style.zIndex = "1000";
+
+const editBox = document.createElement("div");
+editBox.style.background = "white";
+editBox.style.padding = "20px";
+editBox.style.borderRadius = "8px";
+editBox.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+editBox.style.display = "flex";
+editBox.style.flexDirection = "column";
+editBox.style.width = "300px";
+
+const editInput = document.createElement("input");
+editInput.type = "text";
+editInput.style.padding = "8px";
+editInput.style.fontSize = "16px";
+editInput.style.marginBottom = "12px";
+editInput.style.border = "1px solid #ccc";
+editInput.style.borderRadius = "4px";
+
+const buttonContainer = document.createElement("div");
+buttonContainer.style.display = "flex";
+buttonContainer.style.justifyContent = "flex-end";
+buttonContainer.style.gap = "10px";
+
+const saveBtn = document.createElement("button");
+saveBtn.textContent = "Save";
+saveBtn.style.background = "#377dff";
+saveBtn.style.color = "white";
+saveBtn.style.border = "none";
+saveBtn.style.padding = "8px 16px";
+saveBtn.style.borderRadius = "4px";
+saveBtn.style.cursor = "pointer";
+
+const cancelBtn = document.createElement("button");
+cancelBtn.textContent = "Cancel";
+cancelBtn.style.background = "#ccc";
+cancelBtn.style.border = "none";
+cancelBtn.style.padding = "8px 16px";
+cancelBtn.style.borderRadius = "4px";
+cancelBtn.style.cursor = "pointer";
+
+buttonContainer.appendChild(cancelBtn);
+buttonContainer.appendChild(saveBtn);
+editBox.appendChild(editInput);
+editBox.appendChild(buttonContainer);
+editPopup.appendChild(editBox);
+document.body.appendChild(editPopup);
+
+let editingIndex = null;
+
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
 function saveTodos() {
@@ -12,6 +72,10 @@ function renderTodos() {
   todoList.innerHTML = "";
   todos.forEach((task, index) => {
     const li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.justifyContent = "space-between";
+    li.style.alignItems = "center";
+    li.className = task.completed ? "completed" : "";
 
     const span = document.createElement("span");
     span.textContent = task.text;
@@ -19,21 +83,18 @@ function renderTodos() {
     const editBtn = document.createElement("button");
     editBtn.textContent = "✏";
     editBtn.style.marginLeft = "10px";
+
     editBtn.addEventListener("click", () => {
-      const newText = prompt("Edit task:", task.text);
-      if (newText !== null) {
-        const trimmedText = newText.trim();
-        if (trimmedText !== "") {
-          todos[index].text = trimmedText;
-          saveTodos();
-          renderTodos();
-        }
-      }
+      editingIndex = index;
+      editInput.value = todos[editingIndex].text;
+      editPopup.style.display = "flex";
+      editInput.focus();
     });
 
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "X";
     removeBtn.style.marginLeft = "10px";
+
     removeBtn.addEventListener("click", () => {
       todos.splice(index, 1);
       saveTodos();
@@ -58,3 +119,26 @@ addBtn.addEventListener("click", () => {
 });
 
 window.onload = renderTodos;
+
+saveBtn.addEventListener("click", () => {
+  const newText = editInput.value.trim();
+  if (newText && editingIndex !== null) {
+    todos[editingIndex].text = newText;
+    saveTodos();
+    renderTodos();
+    editingIndex = null;
+    editPopup.style.display = "none";
+  }
+});
+
+cancelBtn.addEventListener("click", () => {
+  editingIndex = null;
+  editPopup.style.display = "none";
+});
+
+editPopup.addEventListener("click", (e) => {
+  if (e.target === editPopup) {
+    editingIndex = null;
+    editPopup.style.display = "none";
+  }
+});

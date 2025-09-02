@@ -2,6 +2,7 @@ const input = document.getElementById("todo-input");
 const addBtn = document.getElementById("add-btn");
 const todoList = document.getElementById("todo-list");
 
+// Custom edit popup elements (created dynamically)
 const editPopup = document.createElement("div");
 editPopup.style.position = "fixed";
 editPopup.style.top = "0";
@@ -77,8 +78,23 @@ function renderTodos() {
     li.style.alignItems = "center";
     li.className = task.completed ? "completed" : "";
 
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.completed;
+    checkbox.addEventListener("change", () => {
+      todos[index].completed = checkbox.checked;
+      saveTodos();
+      renderTodos();
+    });
+
     const span = document.createElement("span");
     span.textContent = task.text;
+    span.style.marginLeft = "10px";
+    if (task.completed) {
+      span.style.textDecoration = "line-through";
+      span.style.color = "#a7c2e7";
+      span.style.opacity = "0.7";
+    }
 
     const editBtn = document.createElement("button");
     editBtn.textContent = "✏";
@@ -101,6 +117,7 @@ function renderTodos() {
       renderTodos();
     });
 
+    li.appendChild(checkbox);
     li.appendChild(span);
     li.appendChild(editBtn);
     li.appendChild(removeBtn);

@@ -18,13 +18,9 @@ buttonContainer.className = "edit-btns";
 
 const saveBtn = document.createElement("button");
 saveBtn.textContent = "Save";
-saveBtn.style.background = "#3a3dff";
-saveBtn.style.color = "white";
 
 const cancelBtn = document.createElement("button");
 cancelBtn.textContent = "Cancel";
-cancelBtn.style.background = "#888";
-cancelBtn.style.color = "white";
 
 buttonContainer.append(cancelBtn, saveBtn);
 editBox.append(editInput, buttonContainer);
@@ -47,6 +43,7 @@ function renderTodos() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = task.completed;
+    checkbox.style.marginTop = "6px";
     checkbox.addEventListener("change", () => {
       todos[index].completed = checkbox.checked;
       saveTodos();
@@ -55,7 +52,7 @@ function renderTodos() {
 
     const span = document.createElement("span");
     span.textContent = task.text;
-    span.style.marginLeft = "10px";
+    span.className = "task-text";
 
     if (task.completed) {
       span.style.textDecoration = "line-through";
@@ -63,10 +60,12 @@ function renderTodos() {
       span.style.opacity = "0.7";
     }
 
+    const buttonDiv = document.createElement("div");
+    buttonDiv.className = "task-buttons";
+
     const editBtn = document.createElement("button");
     editBtn.textContent = "🖉";
     editBtn.title = "Edit task";
-    editBtn.style.marginLeft = "10px";
     editBtn.addEventListener("click", () => {
       editingIndex = index;
       editInput.value = todos[index].text;
@@ -77,14 +76,15 @@ function renderTodos() {
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "✖";
     removeBtn.title = "Remove task";
-    removeBtn.style.marginLeft = "10px";
     removeBtn.addEventListener("click", () => {
       todos.splice(index, 1);
       saveTodos();
       renderTodos();
     });
 
-    li.append(checkbox, span, editBtn, removeBtn);
+    buttonDiv.append(editBtn, removeBtn);
+
+    li.append(checkbox, span, buttonDiv);
     todoList.appendChild(li);
   });
 }
@@ -117,7 +117,7 @@ cancelBtn.addEventListener("click", () => {
   editPopup.style.display = "none";
 });
 
-editPopup.addEventListener("click", e => {
+editPopup.addEventListener("click", (e) => {
   if (e.target === editPopup) {
     editingIndex = null;
     editPopup.style.display = "none";

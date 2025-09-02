@@ -2,7 +2,11 @@ const input = document.getElementById("todo-input");
 const addBtn = document.getElementById("add-btn");
 const todoList = document.getElementById("todo-list");
 
-const todos = [];
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+function saveTodos() {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
 
 function renderTodos() {
   todoList.innerHTML = "";
@@ -17,7 +21,10 @@ addBtn.onclick = () => {
   const task = input.value.trim();
   if (task) {
     todos.push(task);
+    saveTodos();
     input.value = "";
     renderTodos();
   }
 };
+
+window.onload = renderTodos;

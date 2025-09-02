@@ -12,30 +12,49 @@ function renderTodos() {
   todoList.innerHTML = "";
   todos.forEach((task, index) => {
     const li = document.createElement("li");
-    li.textContent = task.text || task;              //  to handle object or string if localstorage
+
+    const span = document.createElement("span");
+    span.textContent = task.text;
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏";
+    editBtn.style.marginLeft = "10px";
+    editBtn.addEventListener("click", () => {
+      const newText = prompt("Edit task:", task.text);
+      if (newText !== null) {
+        const trimmedText = newText.trim();
+        if (trimmedText !== "") {
+          todos[index].text = trimmedText;
+          saveTodos();
+          renderTodos();
+        }
+      }
+    });
 
     const removeBtn = document.createElement("button");
-    removeBtn.textContent = "X";                       //Replace with your X icon later
+    removeBtn.textContent = "X";
     removeBtn.style.marginLeft = "10px";
-    removeBtn.onclick = () => {
+    removeBtn.addEventListener("click", () => {
       todos.splice(index, 1);
       saveTodos();
       renderTodos();
-    };
+    });
 
+    li.appendChild(span);
+    li.appendChild(editBtn);
     li.appendChild(removeBtn);
     todoList.appendChild(li);
   });
 }
 
-addBtn.onclick = () => {
-  const task = input.value.trim();
-  if (task) {
-    todos.push({ text: task }); //store as objetc for later feature
+addBtn.addEventListener("click", () => {
+  const taskText = input.value.trim();
+  if (taskText) {
+    todos.push({ text: taskText, completed: false });
     saveTodos();
     input.value = "";
     renderTodos();
   }
-};
+});
 
 window.onload = renderTodos;
